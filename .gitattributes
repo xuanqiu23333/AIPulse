@@ -1,0 +1,5 @@
+# Exact-byte pins must survive Git checkout on Windows and other systems.
+/alembic/versions/*.py -text
+/src/ollama_deep_researcher/*.py -text
+/docs/UPSTREAM-LICENSE.txt -text
+/docs/UPSTREAM-README.md -text

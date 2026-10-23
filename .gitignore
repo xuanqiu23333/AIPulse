@@ -1,0 +1,74 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+secrets/
+credentials/
+*.pem
+*.key
+*.p12
+
+# Python and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Local data and logs
+data/
+logs/
+*.log
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Frontend and editors
+node_modules/
+.vite/
+.idea/
+.vscode/
+
+# Local database exports, acceptance evidence and generated reports
+*.sql
+*.sql.gz
+*.dump
+backups/
+*_acceptance/
+test-results/
+playwright-report/
+coverage/
+*.tsbuildinfo
+*.har
+*.heapsnapshot
+npm-debug.log*
+.npm-cache/
+# Private diagnostic directories may have restrictive local ACLs.
+aipulse_diag_*/
+
+# Private local acceptance/diagnostic artifacts (keep public docs and fixtures)
+/*_acceptance*/
+/research_final_recheck_*/
+/research_quality_fix/
+/release_audit*/
+/.npmrc
+/.pypirc
+/.netrc
+/.conda/
+/venv/
+/env/
+/.tox/
+/.nox/
+*.pfx
+*.bak
+*.orig
+*.rej
+.DS_Store
+Thumbs.db
