@@ -1,0 +1,37 @@
+{
+  "topstories": [101, 102, 103, 104, 105, 101, 106],
+  "newstories": [106, 101],
+  "items": {
+    "101": {
+      "id": 101,
+      "type": "story",
+      "by": "alice",
+      "time": 1760486400,
+      "title": "AI release &amp; tools",
+      "text": "<p>New <b>AI</b> tools &amp; notes.</p>",
+      "url": "https://example.org/ai-release",
+      "score": 42,
+      "descendants": 7
+    },
+    "102": {
+      "id": 102,
+      "type": "story",
+      "by": "bob",
+      "time": 1760486460,
+      "title": "Ask HN: What changed?",
+      "text": "<p>Hello <a href=\"https://example.org/\">world</a>.</p><script>secret()</script>",
+      "score": 3,
+      "descendants": 1
+    },
+    "103": {"id": 103, "type": "story", "deleted": true},
+    "104": {"id": 104, "type": "story", "dead": true},
+    "105": {"id": 105, "type": "job", "title": "AI job"},
+    "106": {
+      "id": 106,
+      "type": "story",
+      "time": 1760486520,
+      "title": "Show HN: Offline model",
+      "text": "<p>Works locally.</p>"
+    }
+  }
+}

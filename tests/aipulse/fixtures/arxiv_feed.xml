@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:arxiv="http://arxiv.org/schemas/atom"
+      xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>arXiv query result</title>
+  <opensearch:totalResults>2</opensearch:totalResults>
+  <entry>
+    <id>https://arxiv.org/abs/2601.12345v2</id>
+    <title>  Robust
+      AI   Research  </title>
+    <summary>  A multi-line
+      abstract.  </summary>
+    <published>2026-01-10T08:00:00+08:00</published>
+    <updated>2026-02-11T04:30:00Z</updated>
+    <author><name>Alice Example</name></author>
+    <author><name>Bob Example</name></author>
+    <category term="cs.AI" />
+    <category term="cs.LG" />
+    <arxiv:primary_category term="cs.AI" />
+    <arxiv:doi>10.1234/example.2026</arxiv:doi>
+    <link rel="alternate" type="text/html" href="https://arxiv.org/abs/2601.12345v2" />
+    <link rel="related" title="pdf" type="application/pdf" href="https://arxiv.org/pdf/2601.12345v2" />
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/hep-ex/0307015v2</id>
+    <title>Legacy Paper</title>
+    <summary>Legacy abstract.</summary>
+    <published>2003-07-02T00:00:00Z</published>
+    <updated>2004-01-01T00:00:00Z</updated>
+    <link rel="alternate" type="text/html" href="https://arxiv.org/abs/hep-ex/0307015v2" />
+  </entry>
+</feed>

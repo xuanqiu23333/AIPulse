@@ -1,0 +1,126 @@
+{
+  "provenance": {
+    "kind": "synthetic",
+    "author": "xuanqiu233",
+    "license": "MIT",
+    "description": "Self-contained invented test evidence and legacy-shaped reports. No copied external abstracts, historical task payloads, raw model output, API keys or private identities. example.org links are inert identifiers; never fetched."
+  },
+  "evidence": [
+    {
+      "source_type": "stored_news",
+      "source_id": "synthetic-1",
+      "source_url": "https://example.org/synthetic/evidence-1",
+      "title": "Synthetic fixture 1 LangGraph",
+      "content": "Synthetic release metadata: LangGraph example version for a local parser test. No technical capability claim is made.",
+      "coverage": "excerpt",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E001",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    },
+    {
+      "source_type": "stored_news",
+      "source_id": "synthetic-2",
+      "source_url": "https://example.org/synthetic/evidence-2",
+      "title": "Synthetic fixture 2 LangGraph",
+      "content": "Synthetic LangGraph maintenance note. This example contains release metadata, not evidence about research tools.",
+      "coverage": "excerpt",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E002",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    },
+    {
+      "source_type": "arxiv",
+      "source_id": "synthetic-3",
+      "source_url": "https://example.org/synthetic/evidence-3",
+      "title": "Synthetic fixture 3 LangGraph",
+      "content": "Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. Synthetic padding for the bounded excerpt transport test. \nLangGraph represents state updates as a directed state graph with conditional transitions, persistent state checkpoints, and modular recovery mechanisms.",
+      "coverage": "abstract",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E003",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    },
+    {
+      "source_type": "arxiv",
+      "source_id": "synthetic-4",
+      "source_url": "https://example.org/synthetic/evidence-4",
+      "title": "Synthetic fixture 4 LangGraph",
+      "content": "Synthetic comparison material: LangGraph is named as background alongside OtherHarness. This paragraph does not establish technical capabilities.",
+      "coverage": "abstract",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E004",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    },
+    {
+      "source_type": "arxiv",
+      "source_id": "synthetic-5",
+      "source_url": "https://example.org/synthetic/evidence-5",
+      "title": "Synthetic fixture 5 LangGraph",
+      "content": "Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. Synthetic background padding for the long excerpt transport test. \nThis invented adapter note mentions integrating with LangGraph through example adapters. It does not describe native LangGraph capabilities.",
+      "coverage": "abstract",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E005",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    },
+    {
+      "source_type": "arxiv",
+      "source_id": "synthetic-6",
+      "source_url": "https://example.org/synthetic/evidence-6",
+      "title": "Synthetic fixture 6 unrelated framework",
+      "content": "OtherHarness uses tools and workflow orchestration in this invented sample. This is not evidence about the research target.",
+      "coverage": "abstract",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E006",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    },
+    {
+      "source_type": "arxiv",
+      "source_id": "synthetic-7",
+      "source_url": "https://example.org/synthetic/evidence-7",
+      "title": "Synthetic fixture 7 unrelated framework",
+      "content": "ExampleHarness provides state persistence and tool execution for a synthetic test. The research subject is absent from this text.",
+      "coverage": "abstract",
+      "quality_note": "Entirely synthetic test material; not retrieved news, paper text or a model response.",
+      "retrieved_at": "2026-01-01T00:00:00Z",
+      "citation": "E007",
+      "relevance_note": "Synthetic replay of structural and attribution cases, not a real research result.",
+      "question_ids": []
+    }
+  ],
+  "legacy_reports": [
+    {
+      "topic": "Synthetic legacy compatibility sample",
+      "status": "partial",
+      "overview": [],
+      "conclusions": [],
+      "limitations": [
+        "Synthetic data, not a historical research report."
+      ],
+      "prompt_version": "research-zh-v2",
+      "metrics": {}
+    },
+    {
+      "topic": "Synthetic legacy compatibility sample",
+      "status": "failed",
+      "error_code": "report_output_truncated",
+      "overview": [],
+      "conclusions": [],
+      "limitations": [
+        "Synthetic failure compatibility sample."
+      ],
+      "prompt_version": "research-zh-v1",
+      "metrics": {}
+    }
+  ]
+}

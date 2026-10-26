@@ -1,0 +1,15 @@
+/* AIPulse UI V2 — reference-led blue/white design tokens. */
+:root {
+ --brand:#155dfc; --brand-hover:#104edc; --brand-soft:#eaf1ff; --accent:#286cf6;
+ --ink:#11244a; --muted:#647b9f; --faint:#8193af; --canvas:#f6f9fe;
+ --surface:#fff; --line:#e5ecf8; --line-strong:#d1dff4;
+ --success:#098669; --success-soft:#e8f8f1; --warning:#946012; --warning-soft:#fff7e9;
+ --danger:#b92f49; --danger-soft:#fff1f3;
+ --font-sans:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+ --text-xs:12px; --text-sm:13px; --text-base:14px; --text-reading:16px;
+ --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+ --radius-sm:8px; --radius:12px; --radius-lg:16px;
+ --shadow-sm:0 2px 6px #24477c04,0 0 1px #24477c08;
+ --shadow-hover:0 7px 24px #3058910b; --shadow-popover:0 24px 80px #10244826;
+ --sidebar-width:240px; --header-height:74px; --transition:160ms ease;
+}

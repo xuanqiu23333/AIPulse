@@ -1,0 +1,89 @@
+[project]
+name = "ollama-deep-researcher"
+version = "0.0.1"
+description = "AIPulse: local-first AI news, Chinese briefs, and bounded evidence-based LangGraph research."
+authors = [
+    { name = "xuanqiu233" }
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=1.1.0",
+    "langchain-community>=0.4.0",
+    "tavily-python>=0.7.23",
+    "langchain-ollama>=1.0.0",
+    "duckduckgo-search>=7.3.0",
+    "langchain-openai>=1.1.14",
+    "openai>=2.31.0",
+    "httpx>=0.28.1",
+    "markdownify>=0.11.0",
+    "python-dotenv==1.2.4",
+    "SQLAlchemy>=2.0.42,<2.1",
+    "pydantic>=2.11.7,<3",
+    "pydantic-settings>=2.10,<3",
+    "asyncmy==0.2.16",
+    "cryptography>=42,<47",
+    "alembic==1.20.0",
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+    "APScheduler>=3.11,<4",
+]
+
+[project.optional-dependencies]
+dev = ["mypy>=1.11.1", "ruff>=0.15.10"]
+
+[build-system]
+requires = ["setuptools>=73.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ollama_deep_researcher", "aipulse", "aipulse.storage", "aipulse.models", "aipulse.api", "aipulse.core", "aipulse.runtime", "aipulse.services", "aipulse.news", "aipulse.news.collectors", "aipulse.llm", "aipulse.research"]
+
+[tool.setuptools.package-dir]
+"ollama_deep_researcher" = "src/ollama_deep_researcher"
+"aipulse" = "src/aipulse"
+"aipulse.storage" = "src/aipulse/storage"
+"aipulse.models" = "src/aipulse/models"
+"aipulse.api" = "src/aipulse/api"
+"aipulse.core" = "src/aipulse/core"
+"aipulse.runtime" = "src/aipulse/runtime"
+"aipulse.services" = "src/aipulse/services"
+"aipulse.news" = "src/aipulse/news"
+"aipulse.news.collectors" = "src/aipulse/news/collectors"
+"aipulse.llm" = "src/aipulse/llm"
+"aipulse.research" = "src/aipulse/research"
+
+[tool.setuptools.package-data]
+"*" = ["py.typed"]
+
+[tool.ruff]
+lint.select = [
+    "E",    # pycodestyle
+    "F",    # pyflakes
+    "I",    # isort
+    "D",    # pydocstyle
+    "D401", # First line should be in imperative mood
+    "T201",
+    "UP",
+]
+lint.ignore = [
+    "UP006",
+    "UP007",
+    "UP035",
+    "D417",
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D", "UP"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.7",
+    "pytest>=8.4,<10",
+    "pytest-asyncio>=1.0,<2",
+]

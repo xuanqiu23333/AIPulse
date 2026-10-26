@@ -1,0 +1,32 @@
+[
+  {
+    "id": 101,
+    "html_url": "https://github.com/langchain-ai/langgraph/releases/tag/v1.2.0",
+    "name": "LangGraph 1.2.0",
+    "tag_name": "v1.2.0",
+    "body": "A stable release.",
+    "published_at": "2026-10-15T08:00:00+08:00",
+    "draft": false,
+    "prerelease": false
+  },
+  {
+    "id": 102,
+    "html_url": "https://github.com/langchain-ai/langgraph/releases/tag/v1.3.0-rc1",
+    "name": "",
+    "tag_name": "v1.3.0-rc1",
+    "body": "Release candidate.",
+    "published_at": "2026-10-15T01:00:00Z",
+    "draft": false,
+    "prerelease": true
+  },
+  {
+    "id": 103,
+    "html_url": "https://github.com/langchain-ai/langgraph/releases/tag/v1.4.0",
+    "name": "Draft",
+    "tag_name": "v1.4.0",
+    "body": "Not published.",
+    "published_at": null,
+    "draft": true,
+    "prerelease": false
+  }
+]
