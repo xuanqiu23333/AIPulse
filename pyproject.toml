@@ -1,5 +1,5 @@
 [project]
-name = "ollama-deep-researcher"
+name = "aipulse"
 version = "0.0.1"
 description = "AIPulse: local-first AI news, Chinese briefs, and bounded evidence-based LangGraph research."
 authors = [

@@ -147,6 +147,78 @@ wheels = [
 ]
 
 [[package]]
+name = "aipulse"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "alembic" },
+    { name = "apscheduler" },
+    { name = "asyncmy" },
+    { name = "cryptography" },
+    { name = "duckduckgo-search" },
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "langchain-community" },
+    { name = "langchain-ollama" },
+    { name = "langchain-openai" },
+    { name = "langgraph" },
+    { name = "markdownify" },
+    { name = "openai" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "python-dotenv" },
+    { name = "sqlalchemy" },
+    { name = "tavily-python" },
+    { name = "uvicorn" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "ruff" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "alembic", specifier = "==1.20.0" },
+    { name = "apscheduler", specifier = ">=3.11,<4" },
+    { name = "asyncmy", specifier = "==0.2.16" },
+    { name = "cryptography", specifier = ">=42,<47" },
+    { name = "duckduckgo-search", specifier = ">=7.3.0" },
+    { name = "fastapi", specifier = ">=0.115,<1" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "langchain-community", specifier = ">=0.4.0" },
+    { name = "langchain-ollama", specifier = ">=1.0.0" },
+    { name = "langchain-openai", specifier = ">=1.1.14" },
+    { name = "langgraph", specifier = ">=1.1.0" },
+    { name = "markdownify", specifier = ">=0.11.0" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.1" },
+    { name = "openai", specifier = ">=2.31.0" },
+    { name = "pydantic", specifier = ">=2.11.7,<3" },
+    { name = "pydantic-settings", specifier = ">=2.10,<3" },
+    { name = "python-dotenv", specifier = "==1.2.4" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.10" },
+    { name = "sqlalchemy", specifier = ">=2.0.42,<2.1" },
+    { name = "tavily-python", specifier = ">=0.7.23" },
+    { name = "uvicorn", specifier = ">=0.30,<1" },
+]
+provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.4,<10" },
+    { name = "pytest-asyncio", specifier = ">=1.0,<2" },
+    { name = "ruff", specifier = ">=0.12.7" },
+]
+
+[[package]]
 name = "alembic"
 version = "1.20.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1508,78 +1580,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9d/5a/652dac4b7affc2b37b95386f8ae78f22808af09d720689e3d7a86b6ed98e/ollama-0.6.1.tar.gz", hash = "sha256:478c67546836430034b415ed64fa890fd3d1ff91781a9d548b3325274e69d7c6", size = 51620, upload-time = "2025-11-13T23:02:17.416Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/47/4f/4a617ee93d8208d2bcf26b2d8b9402ceaed03e3853c754940e2290fed063/ollama-0.6.1-py3-none-any.whl", hash = "sha256:fc4c984b345735c5486faeee67d8a265214a31cbb828167782dc642ce0a2bf8c", size = 14354, upload-time = "2025-11-13T23:02:16.292Z" },
-]
-
-[[package]]
-name = "ollama-deep-researcher"
-version = "0.0.1"
-source = { editable = "." }
-dependencies = [
-    { name = "alembic" },
-    { name = "apscheduler" },
-    { name = "asyncmy" },
-    { name = "cryptography" },
-    { name = "duckduckgo-search" },
-    { name = "fastapi" },
-    { name = "httpx" },
-    { name = "langchain-community" },
-    { name = "langchain-ollama" },
-    { name = "langchain-openai" },
-    { name = "langgraph" },
-    { name = "markdownify" },
-    { name = "openai" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "python-dotenv" },
-    { name = "sqlalchemy" },
-    { name = "tavily-python" },
-    { name = "uvicorn" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "ruff" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "alembic", specifier = "==1.20.0" },
-    { name = "apscheduler", specifier = ">=3.11,<4" },
-    { name = "asyncmy", specifier = "==0.2.16" },
-    { name = "cryptography", specifier = ">=42,<47" },
-    { name = "duckduckgo-search", specifier = ">=7.3.0" },
-    { name = "fastapi", specifier = ">=0.115,<1" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "langchain-community", specifier = ">=0.4.0" },
-    { name = "langchain-ollama", specifier = ">=1.0.0" },
-    { name = "langchain-openai", specifier = ">=1.1.14" },
-    { name = "langgraph", specifier = ">=1.1.0" },
-    { name = "markdownify", specifier = ">=0.11.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11.1" },
-    { name = "openai", specifier = ">=2.31.0" },
-    { name = "pydantic", specifier = ">=2.11.7,<3" },
-    { name = "pydantic-settings", specifier = ">=2.10,<3" },
-    { name = "python-dotenv", specifier = "==1.2.4" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.10" },
-    { name = "sqlalchemy", specifier = ">=2.0.42,<2.1" },
-    { name = "tavily-python", specifier = ">=0.7.23" },
-    { name = "uvicorn", specifier = ">=0.30,<1" },
-]
-provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=8.4,<10" },
-    { name = "pytest-asyncio", specifier = ">=1.0,<2" },
-    { name = "ruff", specifier = ">=0.12.7" },
 ]
 
 [[package]]
