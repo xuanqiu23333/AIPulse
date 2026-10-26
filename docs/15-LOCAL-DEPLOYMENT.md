@@ -14,7 +14,8 @@ conda activate Aipulse
 $apProject = (Get-Location).Path
 if (-not (Test-Path -LiteralPath (Join-Path $apProject 'pyproject.toml'))) { throw 'Open the project root first' }
 python --version
-# 先安装/准备 uv；不要创建项目 .venv 或改变其他环境。
+# 固定与 CI 相同的 uv；不要创建项目 .venv 或改变其他环境。
+python -m pip install uv==0.11.15
 $apPreviousUvEnvironment = $env:UV_PROJECT_ENVIRONMENT
 try {
     if (-not $env:CONDA_PREFIX) { throw 'Activate Conda first' }
@@ -29,7 +30,7 @@ try {
 python -m pip check
 ```
 
-`--locked` 校验元数据与 uv.lock；`--frozen` 会跳过一致性检查。`--inexact` 保留激活环境中的其他包。`pip install -e .` 不使用 uv 锁，不能称为锁定安装。当前 distribution 名 `ollama-deep-researcher` 是历史包名，实际业务模块是 `aipulse`。本轮没有在全新 Conda 环境安装全部 Python 包，因此不宣称干净机器安装已真实验证。
+`--locked` 校验元数据与 uv.lock；`--frozen` 会跳过一致性检查。`--inexact` 保留激活环境中的其他包。`pip install -e .` 不使用 uv 锁，不能称为锁定安装。Python distribution 现为 `aipulse`；业务 import 为 `aipulse`，冻结上游 import `ollama_deep_researcher` 保留不变。此次只验证离线 wheel、临时目录 editable install 和现有环境定向测试，没有在全新 Conda 环境安装全部 Python 包，不宣称干净机器安装已真实验证。不要手动删除旧环境中的历史 distribution；需要迁移安装环境时先核对已有包和文件归属。
 
 用户在 `.env` 不存在时复制 `.env.example` 并私下填写 DB_PASSWORD 与可选 DEEPSEEK_API_KEY；不覆盖已有文件。数据库应用配置加载本地 `.env`，功能开关只读取进程环境。API Key 不进入前端。没有 Key 也可准备数据库及只读查询。
 
@@ -123,3 +124,7 @@ Web 为 http://127.0.0.1:5173，Swagger 为 http://127.0.0.1:8000/docs。Vite �
 - 超时或 POST 结果未知：先查询，不重新提交；未知 usage 不能补零。
 - 生产静态托管须配置同源 /api 代理和 SPA 回退；Vite preview 不自带代理。当前无公网认证，不使用隧道公开服务。
 - 日报 v2 已有真实验收；Deep Research v6 完整报告尚未真实验证，见 [报告契约](22-RESEARCH-REPORT-CONTRACT.md)。
+
+## 6. 离线开发检查
+
+固定测试范围、网络守卫与前端命令见 [工程质量说明](25-ENGINEERING-QUALITY.md)。在目标 Conda 环境中临时设置 `UV_PROJECT_ENVIRONMENT=$env:CONDA_PREFIX`，使用 `uv sync --locked --group dev --inexact` 安装测试依赖，随后恢复原环境变量。CI 使用自己的隔离环境，不需要 MySQL 或模型密钥。默认不运行全部测试目录。

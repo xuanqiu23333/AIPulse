@@ -1,3 +1,82 @@
+# AIPulse 当前系统架构
+
+2026-10-26 · 源码核对版。AIPulse 是本机优先的模块化单体，不是微服务。本文前半说明已实现边界；原 2026-10-14 设计保存在文末折叠区，**不是当前能力清单**。
+
+## 当前模块与调用方向
+
+```mermaid
+flowchart TB
+  subgraph Presentation["展示层"]
+    UI["Vue 3 / TypeScript / Vite<br/>Dashboard · News · Daily Brief · Research"]
+  end
+  subgraph HTTP["API 层"]
+    API["FastAPI<br/>Pydantic 校验 · 查询 · 创建 · 取消"]
+  end
+  subgraph Services["业务服务层 · 单进程"]
+    SCHED["APScheduler<br/>可选采集触发"]
+    NEWS["News Pipeline<br/>采集 · 归并 · 评分"]
+    BRIEF["AI Summary / Daily Brief<br/>内容指纹缓存"]
+    GRAPH["LangGraph Research<br/>有界状态编排"]
+    RETR["Research Retriever<br/>本地与公开来源适配"]
+  end
+  subgraph External["AI 与外部数据源"]
+    FEEDS["GitHub Releases<br/>arXiv / Hacker News"]
+    SEARCH["公开 Research APIs<br/>GitHub Search / arXiv / HN Search"]
+    LLM["DeepSeek LLM Gateway<br/>JSON · 超时 · 用量"]
+  end
+  subgraph Persistence["持久化层"]
+    STORE["SQLAlchemy 2 仓储<br/>短事务 · 唯一约束"]
+    DB[("MySQL 8<br/>新闻 · 缓存 · 日报 · 任务 · 证据 · 日志")]
+  end
+  UI --> API
+  API --> NEWS & BRIEF & GRAPH & STORE
+  SCHED --> NEWS
+  NEWS -->|HTTP 采集| FEEDS
+  GRAPH --> RETR
+  RETR -->|有界检索| SEARCH
+  BRIEF & GRAPH -->|模型请求| LLM
+  NEWS & BRIEF & GRAPH & RETR --> STORE
+  STORE --> DB
+  classDef app fill:#eef2f7,stroke:#8393a8,color:#17263c
+  classDef ai fill:#f1edf8,stroke:#9584b0,color:#2b2440
+  classDef data fill:#edf5f1,stroke:#7d9f92,color:#163b30
+  class UI,API,SCHED,NEWS,BRIEF,GRAPH,RETR app
+  class LLM,FEEDS,SEARCH ai
+  class STORE,DB data
+```
+
+| 模块 | 实际入口 / 协作 | 边界 |
+| --- | --- | --- |
+| Web | `frontend/src/pages/`、统一 API client | Dashboard、News、Brief、Research；GET 轮询，POST 需确认 |
+| API | `api/main.py`、news/summary/briefs/research/collect 路由 | Pydantic 参数校验与实例锁；loopback/Host/Origin 保护，非公网认证 |
+| 新闻 | `news/manual_run.py` → IngestionService → ScoringService | CLI/API/调度复用一条链路；来源事务先提交，再评分保存 |
+| 摘要 / 日报 | `api/summary.py`、`api/briefs.py` | 已存标题/摘录及缓存，不抓正文；模型等待无长事务 |
+| 研究 | `research/service.py` → `graph.py` / `tools.py` / `repository.py` | 有界执行、固定来源、事件进度与短事务持久化 |
+| Gateway | `llm/gateway.py`、`llm/validation.py` | JSON + Pydantic、错误分类、usage/耗时，业务重试 0 |
+| 存储 | SQLAlchemy AsyncSession / MySQL 8 / 0001–0004 | 新闻/缓存/日报、任务/证据/日志；不是消息队列或 checkpoint |
+
+APScheduler 仅作为可选新闻采集触发器，在 FastAPI lifespan 启停，与手动采集共享锁；不定时生成日报或研究。所有锁只在单实例内有效。
+
+Research Retriever 读取本地新闻库；开启 external 开关后增加 arXiv abstract、GitHub 仓库搜索 description 和 HN Search 材料。API 来源固定，不抓用户或模型指定 URL。图和摘要/日报通过已有 DeepSeek Gateway 调用模型；当前 AIPulse 不运行冻结上游 Ollama / Tavily 图。
+
+## 实现、验证与设计的区别
+
+| 状态 | 内容 |
+| --- | --- |
+| 已实现 | 三源处理、缓存、日报、StateGraph、有限检索、任务取消、证据/日志保存、Vue 工作台 |
+| 曾真实验证 | 新闻采集/入库/查询，中文摘要，v2 日报及缓存；研究实际执行和 failed/partial 持久化 |
+| 仅离线验证 | 当前 v6 结构、归属/引用规则及成功路径的 Fake 回放；不代表真实模型成功报告 |
+| 未实现 | SSE、跨进程任务队列、LangGraph Checkpointer/恢复、公网认证、任意网页/PDF 抓取 |
+
+外层 Executor 的 360 秒 deadline 与图内轮次判断分开，超时可绕过正常图尾并有界保存失败状态。[详细 StateGraph](13-DEEP-RESEARCH.md) · [部署](15-LOCAL-DEPLOYMENT.md) · [验证](25-ENGINEERING-QUALITY.md)
+
+## 历史架构决策记录
+
+<details>
+<summary>2026-10-14 V1 原始设计（历史，不作为当前部署或能力说明）</summary>
+
+原文中的 SSE、可选 Ollama、其他搜索工具和恢复方案是当时的设计设想。已实现的名称、路由及数据契约以上文和源码为准；保留原文用于追溯取舍，不承诺这些设想已落地。
+
 # AIPulse V1 系统架构设计
 
 > 状态：待审核的设计文档；日期：2026-10-14。范围仅为架构、接口和数据模型，不代表相应模块或数据表已经实现。本轮未修改业务代码、创建表或迁移、安装依赖。产品目标以 [01-PRD.md](01-PRD.md) 为准；环境和 MySQL 最终选型以 [当前部署说明](15-LOCAL-DEPLOYMENT.md)、[首次初始化](15-LOCAL-DEPLOYMENT.md) 为准。
@@ -163,3 +242,6 @@ news_source 1→N news_item；news_event 1→N news_item；news_event 1→N rese
 ## 10. 本阶段交付边界
 
 此文档只确定模块、数据和接口契约，供下一阶段审核。没有创建任何 news_*、daily_brief、research_* 或 agent_run_log 表；没有生成 Alembic revision、FastAPI/Vue 工程或 Agent 重构代码。既有 Git 未提交修改与上游源码保持原状。
+
+
+</details>

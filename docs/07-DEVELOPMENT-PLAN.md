@@ -1,3 +1,5 @@
+> **历史实施计划（2026-10-14）**：本文中的阶段和待办是当时的规划，不是当前能力清单。已实现模块以 [当前架构](06-ARCHITECTURE.md)、[真实研究图](13-DEEP-RESEARCH.md) 和 [工程验证](25-ENGINEERING-QUALITY.md) 为准；SSE、跨进程恢复等设想未因本计划而实现。
+
 # AIPulse V1 TDD 开发计划
 
 > 状态：待审核的实施计划；编制日期：2026-10-14。本文只规划后续工作，不表示功能、数据表或迁移已经实现。执行依据：[06-ARCHITECTURE.md](06-ARCHITECTURE.md)；产品验收依据：[01-PRD.md](01-PRD.md)；环境与数据库边界依据：[当前部署说明](15-LOCAL-DEPLOYMENT.md)、[首次初始化](15-LOCAL-DEPLOYMENT.md)。本轮只创建本文档。

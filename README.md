@@ -1,136 +1,182 @@
 # AIPulse
 
-**本地优先、来源可追溯的 AI 新闻与研究工作台。**
+### AI News Intelligence & Deep Research Platform
 
-真实资讯 → 去重归并与规则评分 → 中文摘要缓存 → 每日情报 → LangGraph 有界研究。
+把分散的 AI 发布、论文与社区动态，整理成**可查询、可总结、可追溯**的个人情报工作台。
 
-面向个人开发与学习。当前支持本机单 worker，不提供公网认证、多租户隔离或生产高可用承诺。
+AIPulse 是一个本地优先的全栈应用：Vue 3 提供阅读与研究界面，FastAPI 编排新闻处理和 AI 服务，MySQL 保存业务状态，LangGraph 通过有界检索与严格引用校验组织研究过程。
 
-## 当前验证状态
+> **验证边界**：真实新闻采集、中文摘要缓存与每日简报 v2 已通过本地真实验收。Deep Research 已真实运行并保存证据和日志，但 **v6 完整成功报告尚未通过真实模型验收**；当前离线测试不代表模型质量已达标。[研究验证边界](docs/21-RESEARCH-FINAL-RECHECK.md)
 
-| 能力 | 验证范围 |
+## 界面预览
+
+以下是当前 UI V2 的实际浏览器截图，全部使用自建 **Demo Data**，不含真实新闻正文或历史任务数据。截图期间没有连接 MySQL、调用模型或触发采集。
+
+![Dashboard — Demo Data](docs/assets/dashboard-demo.jpg)
+
+<details>
+<summary>查看新闻、日报与研究工作台</summary>
+
+| News · Demo Data | Daily Brief · Demo Data |
 | --- | --- |
-| GitHub Releases / arXiv / Hacker News | 已真实采集、归并、入库、评分；支持 CLI、手动 API、可选 APScheduler |
-| 新闻 / 摘要缓存 | 真实 MySQL GET 与前端联调通过，中文摘要曾通过真实模型生成并缓存 |
-| 每日简报 | 2026-10-17 的 v2 日报已真实生成，入选 3 个事件，持久化与缓存 GET 通过 |
-| Deep Research | 已真实执行任务并保存证据、日志及 failed / partial 结果；v6 报告契约仅通过离线验证，完整成功报告质量尚未真实验收 |
-| Vue Web UI | 总览、新闻、日报、研究工作台，桌面/移动布局与只读深链接验证通过 |
+| ![News — Demo Data](docs/assets/news-demo.jpg) | ![Daily Brief — Demo Data](docs/assets/brief-demo.jpg) |
 
-最近一次真实研究因 `report_schema_mismatch` **失败**，未发生截断；当时没有保存字段级违规信息，不能还原具体违规字段。v6 增加了安全诊断与结构说明，尚未进行新的真实模型验证。页面保留实际状态，不将离线测试等同于成功研究。
+![Research Workspace — Demo Data，不代表成功研究](docs/assets/research-demo.jpg)
 
-## 界面与展示材料
+</details>
 
-Vue UI V2 提供总览、新闻、日报和研究工作台，支持桌面与移动端。真实新闻截图涉及外部内容展示权，本次公开快照暂不分发；本地原件保留。仓库不会用假截图冒充真实验收。
+截图来源与复现方式见 [展示资源说明](docs/assets/README.md)。研究演示仅提供合成失败任务，不展示成功报告。
 
-## 功能与技术栈
+## 核心功能
 
-- 三源采集有数量、超时与分页上限；来源独立失败，唯一约束 / UPSERT 保证幂等。
-- 规则分类与重要性评分；日报独立判断 AI 相关性，不篡改重要性分数。
-- 摘要 JSON + Pydantic 校验，按内容指纹、模型、Prompt 版本缓存，来源 URL 后端控制。
-- Asia/Shanghai 单日日报，最多 5 个事件、整份最多一次模型调用；GET 永不生成。
-- LangGraph 多节点研究、有限补充检索、证据编号与逐字引文校验、失败用量统计和取消终态。
-- 任务、证据、日志、报告持久化；前端刷新恢复查询，有界 GET 轮询不会重新创建任务。
+| 能力 | 实现与边界 | 核心源码 |
+| --- | --- | --- |
+| 多源新闻处理 | GitHub Releases、arXiv、HN；标准化、幂等入库、事件归并与规则评分 | [manual_run.py](src/aipulse/news/manual_run.py)、[service.py](src/aipulse/news/service.py) |
+| 中文摘要与日报 | Pydantic 结构化输出、内容指纹缓存；日报独立筛选 AI 相关性，最多 5 个事件、一次模型调用 | [summary.py](src/aipulse/api/summary.py)、[brief.py](src/aipulse/news/brief.py) |
+| 有界研究 Agent | StateGraph、缺口补充检索、稳定证据编号、逐项引用校验及安全降级 | [graph.py](src/aipulse/research/graph.py)、[evidence.py](src/aipulse/research/evidence.py) |
+| 可追溯工作台 | 新闻过滤与分页、缓存阅读、任务状态轮询、证据定位及取消 | [pages/](frontend/src/pages)、[service.py](src/aipulse/research/service.py) |
 
-**后端**：Python 3.11、FastAPI、MySQL 8、SQLAlchemy 2 AsyncSession、asyncmy、Alembic、APScheduler 3、LangGraph、DeepSeek V4 Pro / OpenAI 兼容 Gateway。
+## 系统架构
 
-**前端**：Vue 3、TypeScript、Vite、Tailwind CSS、Lucide。**验证**：pytest、Vitest 定向离线检查。
-
-```text
-src/aipulse/                 AIPulse 后端及研究实现
-src/ollama_deep_researcher/   冻结上游参考源码
-frontend/                    Vue 应用、锁文件、离线交互测试
-alembic/versions/            0001 基础表 → 0002 评分 → 0003 摘要 → 0004 研究载荷
-tests/aipulse/unit/          Mock / Fake 定向检查
-docs/                       架构、模块、部署及验收
-```
-
-## 架构
+模块化单体；前后端可独立启动，但没有微服务、消息队列或分布式执行器。
 
 ```mermaid
-flowchart LR
-  UI[Vue Web UI] --> API[FastAPI 本机 API]
-  CLI[手动 CLI] --> RUN[采集 / 归并 / 评分]
-  API --> RUN
-  S[可选 APScheduler] --> RUN
-  RUN --> COL[GitHub / arXiv / HN]
-  RUN --> DB[(MySQL)]
-  API --> CACHE[摘要 / 日报缓存]
-  CACHE --> DB
-  CACHE --> LLM[DeepSeek Gateway]
-  API --> GRAPH[LangGraph Research]
-  GRAPH --> TOOLS[本地新闻 / 公开 API]
-  GRAPH --> LLM
-  GRAPH --> DB
+flowchart TB
+  subgraph Presentation["展示层"]
+    UI["Vue 3 / TypeScript / Vite<br/>Dashboard · News · Daily Brief · Research"]
+  end
+  subgraph HTTP["API 层"]
+    API["FastAPI<br/>Pydantic 校验 · 查询 · 创建 · 取消"]
+  end
+  subgraph Services["业务服务层 · 单进程"]
+    SCHED["APScheduler<br/>可选采集触发"]
+    NEWS["News Pipeline<br/>采集 · 归并 · 评分"]
+    BRIEF["AI Summary / Daily Brief<br/>内容指纹缓存"]
+    GRAPH["LangGraph Research<br/>有界状态编排"]
+    RETR["Research Retriever<br/>本地与公开来源适配"]
+  end
+  subgraph External["AI 与外部数据源"]
+    FEEDS["GitHub Releases<br/>arXiv / Hacker News"]
+    SEARCH["公开 Research APIs<br/>GitHub Search / arXiv / HN Search"]
+    LLM["DeepSeek LLM Gateway<br/>JSON · 超时 · 用量"]
+  end
+  subgraph Persistence["持久化层"]
+    STORE["SQLAlchemy 2 仓储<br/>短事务 · 唯一约束"]
+    DB[("MySQL 8<br/>新闻 · 缓存 · 日报 · 任务 · 证据 · 日志")]
+  end
+  UI --> API
+  API --> NEWS & BRIEF & GRAPH & STORE
+  SCHED --> NEWS
+  NEWS -->|HTTP 采集| FEEDS
+  GRAPH --> RETR
+  RETR -->|有界检索| SEARCH
+  BRIEF & GRAPH -->|模型请求| LLM
+  NEWS & BRIEF & GRAPH & RETR --> STORE
+  STORE --> DB
+  classDef app fill:#eef2f7,stroke:#8393a8,color:#17263c
+  classDef ai fill:#f1edf8,stroke:#9584b0,color:#2b2440
+  classDef data fill:#edf5f1,stroke:#7d9f92,color:#163b30
+  class UI,API,SCHED,NEWS,BRIEF,GRAPH,RETR app
+  class LLM,FEEDS,SEARCH ai
+  class STORE,DB data
 ```
+
+箭头表示调用方向。Research Retriever 读取本地新闻并按开关访问固定公开 API；MySQL 保存新闻、摘要缓存、日报、研究任务、证据及节点日志。[详细模块边界与历史设计](docs/06-ARCHITECTURE.md)
+
+## LangGraph Research Workflow
 
 ```mermaid
 flowchart TD
-  START --> plan_research
-  plan_research --> retrieve_sources
-  retrieve_sources --> evaluate_evidence
-  evaluate_evidence --> identify_gaps
-  identify_gaps -->|需补充且预算足够| refine_research
-  refine_research --> retrieve_sources
-  identify_gaps -->|够用或达到上限| synthesize_report
-  synthesize_report --> validate_report
-  validate_report --> persist_result
-  persist_result --> END
+  PLAN["研究规划"] --> SEARCH["多源检索"]
+  SEARCH --> EVIDENCE["证据评估与缺口识别"]
+  EVIDENCE --> ROUTE{"有缺口、未用查询<br/>且轮次允许？"}
+  ROUTE -->|选择补充查询| SEARCH
+  ROUTE -->|已覆盖或无法继续| REPORT["证据约束的报告生成"]
+  REPORT --> VERIFY["结构化输出与引用校验"]
+  VERIFY --> SAVE["结果持久化"]
+  SAVE --> STATUS["实际终态<br/>completed / partial / failed"]
 ```
 
-研究最多 2 次模型调用、3 轮检索、18 条证据、360 秒。规划 / 报告生成上限 1000 / 6144 Token，合计 7144（输入另计），报告使用 `high` 推理。没有持久化 checkpoint 或自动恢复付费执行；引用匹配不等于独立事实核查。
+最多 **2 次模型调用、3 轮检索、18 条证据**。规划 / 报告输出上限为 **1000 / 6144 Token**，输入另计；外层执行器设置 **360 秒截止**，超时不会强行生成报告。证据不足可以得到 partial，格式或执行错误可以得到 failed，不以“跑完流程”冒充成功。[真实节点、路由与失败边界](docs/13-DEEP-RESEARCH.md)
 
-## 本地运行
+## 技术栈
 
-完整步骤：[Windows / Conda 部署与排障](docs/15-LOCAL-DEPLOYMENT.md)。**先准备数据库，不要裸跑 `alembic upgrade head`。**
+| 层次 | 技术 |
+| --- | --- |
+| API / 数据 | Python 3.11 · FastAPI · Pydantic v2 · SQLAlchemy 2 AsyncSession · asyncmy |
+| 持久化 / 调度 | MySQL 8 · Alembic 0001–0004 · 可选 APScheduler 3 |
+| AI / Agent | DeepSeek V4 Pro · OpenAI 兼容 Gateway · LangGraph StateGraph |
+| Web / 验证 | Vue 3 · TypeScript · Vite · Tailwind CSS · pytest · Vitest |
 
-受保护空库入口现支持逐阶段 `0001 → 0002 → 0003 → 0004`，不依赖 Git 分支或作者解释器路径；已有非空数据库会被拒绝。四份迁移保持审核校验值，先备份再人工运行。迁移编排已离线验证，本轮没有在真实空库执行。见[首次部署](docs/15-LOCAL-DEPLOYMENT.md)与[公开快照边界](docs/24-PUBLIC-CANDIDATE.md)。
+## 工程设计亮点
 
-1. 使用 Conda Python 3.11；Python 依赖见 `pyproject.toml` / `uv.lock`，前端安装使用 `package-lock.json`。
-2. 手动复制 `.env.example` 为本地 `.env`，填写自己的密码与密钥。不要覆盖已有 `.env`。
-3. 准备 `127.0.0.1:3306/aipulse_db`、`aipulse_app` 和专用迁移账号。使用专用服务账号和交互式迁移口令，不使用个人账号；检查 MySQL 版本、字符集和权限。
-4. 启动只读模式：
+- **事务与费用边界**：网络 / 模型等待不持有数据库事务；生成失败不覆盖已有有效缓存。
+- **幂等与缓存**：唯一约束 / UPSERT 处理重复新闻；摘要与日报按实际输入、模型和 Prompt 版本判断缓存有效性。
+- **证据优先**：相关性和技术归属分离；标题不能支持超范围技术结论，无效引用逐项剔除，其他有效结论保留。
+- **有界执行**：任务槽、轮次、调用次数、Token 与时间共同限制成本；失败调用的已知 usage 仍计入，未知值不补零。
+- **安全默认值**：写入、调度及付费功能默认关闭；loopback / Host / Origin 保护、POST 二次确认、日志脱敏和外部输入边界。
+
+以上为 AIPulse 新增业务实现；LangGraph 等框架及冻结上游保留各自归属。[工程验证说明](docs/25-ENGINEERING-QUALITY.md)
+
+## Quick Start
+
+需要 Python 3.11、受支持的 Node/npm 与本机 MySQL。先克隆仓库，在项目根目录打开 PowerShell：
 
 ```powershell
-# 在克隆根目录打开 PowerShell；可位于任意普通目录。
-$apProject = (Get-Location).Path
+conda create -n Aipulse python=3.11
 conda activate Aipulse
+python -m pip install uv==0.11.15
+if (-not $env:CONDA_PREFIX) { throw 'Activate the target Conda environment first' }
+$env:UV_PROJECT_ENVIRONMENT = $env:CONDA_PREFIX
+uv sync --locked --no-dev --inexact
+```
+
+仅在本地 `.env` 不存在时复制 `.env.example`，私下配置应用账号与密钥。**数据库首次准备、备份及受保护初始化必须按 [部署文档](docs/15-LOCAL-DEPLOYMENT.md) 人工执行**，不要裸跑 `alembic upgrade head`。
+
+准备好数据库后，只读启动后端：
+
+```powershell
 $env:PYTHONPATH = 'src'
-$env:AIPULSE_ENABLE_MANUAL_COLLECTION = '0'
-$env:AIPULSE_ENABLE_SCHEDULED_COLLECTION = '0'
-$env:AIPULSE_ENABLE_AI_SUMMARY = '0'
-$env:AIPULSE_ENABLE_DAILY_BRIEF = '0'
-$env:AIPULSE_ENABLE_RESEARCH = '0'
-$env:AIPULSE_ENABLE_RESEARCH_EXTERNAL = '0'
+foreach ($feature in @('MANUAL_COLLECTION', 'SCHEDULED_COLLECTION', 'AI_SUMMARY',
+                       'DAILY_BRIEF', 'RESEARCH', 'RESEARCH_EXTERNAL')) {
+    Set-Item -Path "Env:AIPULSE_ENABLE_$feature" -Value '0'
+}
 python -B -m uvicorn aipulse.api.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-proxy-headers
 ```
 
-另开终端，在同一克隆根目录执行：
+另开终端，在项目根目录执行：
 
 ```powershell
-$apProject = (Get-Location).Path
-Set-Location (Join-Path $apProject "frontend")
+cd frontend
 npm ci
 npm run dev
 ```
 
-打开 [Web 工作台](http://127.0.0.1:5173)、[Swagger](http://127.0.0.1:8000/docs)。前端需要受支持的 Node/npm；新安装缺数据时显示空状态，不载入假新闻。
+打开 [Web](http://127.0.0.1:5173) / [Swagger](http://127.0.0.1:8000/docs)。空库显示空状态，应用不会自动导入 Demo Data 或发起付费操作。
 
-## 安全与费用
+## 测试与验证
 
-- 全部写入 / 付费 / 定时开关默认关闭，须在 API 启动前设置**进程环境变量**。这些开关不从 `.env` 自动启用。
-- 付费接口验证 loopback peer、Host、Origin 与跨站请求；当前无公网认证，不应使用公网隧道或对外代理。
-- POST 需主动确认、提交中禁用；超时或受理结果不明时先 GET 查询，禁止自动重试。
-- 摘要、日报各最多一次调用，研究最多两次，业务 SDK 重试 0；失败、取消和截断也可能计费。Token 上限不是金额上限，以供应商实际账单为准。
-- 外部新闻是不可信数据；不执行其中指令，URL 由后端控制，不默认保存 Prompt、模型原文、推理内容或密钥。不能保证完全消除 Prompt Injection。
-- GET 不执行模型、检索或历史状态修复。备份、日志和验收业务数据放项目外。
-- 实例锁不跨进程。生产静态部署需同源 `/api` 代理和 SPA 回退；Vite preview 不自带 API 代理。
+[Offline CI](.github/workflows/ci.yml) 覆盖 Python 3.11 的固定离线用例，以及前端 test / typecheck / build。测试使用 Fake / Mock，网络守卫阻断真实出站连接；没有 MySQL service、真实密钥、采集或部署步骤。
 
-## 文档与归属
+```powershell
+# 在已配置目标环境的终端安装测试依赖
+uv sync --locked --group dev --inexact
+python .github/scripts/run_offline_tests.py --check-guard
+python .github/scripts/run_offline_tests.py
+```
 
-- [架构](docs/06-ARCHITECTURE.md) · [采集](docs/08-MVP-MANUAL-COLLECTION.md) · [Gateway](docs/09-LLM-GATEWAY.md)
-- [摘要](docs/10-AI-NEWS-SUMMARY.md) · [日报](docs/12-DAILY-BRIEF-MVP.md) · [研究](docs/13-DEEP-RESEARCH.md) · [前端](docs/14-FRONTEND-MVP.md)
-- [部署](docs/15-LOCAL-DEPLOYMENT.md) · [发布快照边界](docs/24-PUBLIC-CANDIDATE.md) · [真实项目介绍](docs/17-PROJECT-PROFILE.md)
-- [研究质量](docs/20-DEEP-RESEARCH-QUALITY.md) · [v6 报告契约](docs/22-RESEARCH-REPORT-CONTRACT.md) · [公开候选说明](docs/24-PUBLIC-CANDIDATE.md)
-- [上游归属](THIRD_PARTY_NOTICES.md) · [上游 README](docs/UPSTREAM-README.md) · [MIT 许可](LICENSE) · [上游原许可证](docs/UPSTREAM-LICENSE.txt)
+本轮只完成本地验证和 CI 静态检查，**尚未推送或运行远程 Actions，不展示通过 Badge**。前端指令、测试范围与实际结果见 [工程质量说明](docs/25-ENGINEERING-QUALITY.md)。
 
-维护者：**xuanqiu233**。AIPulse 自主新增代码采用 MIT，`Copyright (c) 2026 xuanqiu233`。冻结的 `langchain-ai/local-deep-researcher` 上游代码保留 `Copyright (c) 2025 Lance Martin` 与原 MIT 许可。第三方代码、依赖和新闻内容的权利边界见归属文档；MIT 不授予新闻数据或品牌权利。早期审计是历史记录，启动以本文和部署文档为准。
+## 已知限制
+
+- 单用户、本机单 worker MVP；没有公网认证、多租户隔离、跨进程互斥或高可用承诺。
+- 使用 GET 有界轮询，没有 SSE；持久化结果与日志不等于 LangGraph Checkpointer 或断点恢复。
+- 检索只取得已存摘录和公开 API 元数据，不额外抓网页 / PDF 全文；引用匹配不保证语义完全正确，覆盖规则也可能漏判。
+- v6 完整成功报告未真实验收；超时、失败、取消及截断也可能收费。所有真实付费操作均需操作者明确启用和确认。
+- 没有生产部署、用户量、QPS 或模型准确率等可报告指标；干净机器真实迁移及跨平台安装仍需独立验证。
+
+## License / Third-party Attribution
+
+AIPulse 自主新增代码：**MIT · Copyright (c) 2026 xuanqiu233**。冻结的 `local-deep-researcher` 源码保留 **Copyright (c) 2025 Lance Martin** 及原 MIT 许可，不将其描述为 AIPulse 原创。
+
+[LICENSE](LICENSE) · [第三方声明](THIRD_PARTY_NOTICES.md) · [原上游许可证](docs/UPSTREAM-LICENSE.txt) · [依赖许可](docs/18-DEPENDENCY-LICENSES.md) · [项目介绍](docs/17-PROJECT-PROFILE.md)
