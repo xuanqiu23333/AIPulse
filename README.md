@@ -40,62 +40,13 @@ AIPulse 是一个本地优先的全栈应用：Vue 3 提供阅读与研究界面
 
 模块化单体；前后端可独立启动，但没有微服务、消息队列或分布式执行器。
 
-```mermaid
-flowchart TB
-  subgraph Presentation["展示层"]
-    UI["Vue 3 / TypeScript / Vite<br/>Dashboard · News · Daily Brief · Research"]
-  end
-  subgraph HTTP["API 层"]
-    API["FastAPI<br/>Pydantic 校验 · 查询 · 创建 · 取消"]
-  end
-  subgraph Services["业务服务层 · 单进程"]
-    SCHED["APScheduler<br/>可选采集触发"]
-    NEWS["News Pipeline<br/>采集 · 归并 · 评分"]
-    BRIEF["AI Summary / Daily Brief<br/>内容指纹缓存"]
-    GRAPH["LangGraph Research<br/>有界状态编排"]
-    RETR["Research Retriever<br/>本地与公开来源适配"]
-  end
-  subgraph External["AI 与外部数据源"]
-    FEEDS["GitHub Releases<br/>arXiv / Hacker News"]
-    SEARCH["公开 Research APIs<br/>GitHub Search / arXiv / HN Search"]
-    LLM["DeepSeek LLM Gateway<br/>JSON · 超时 · 用量"]
-  end
-  subgraph Persistence["持久化层"]
-    STORE["SQLAlchemy 2 仓储<br/>短事务 · 唯一约束"]
-    DB[("MySQL 8<br/>新闻 · 缓存 · 日报 · 任务 · 证据 · 日志")]
-  end
-  UI --> API
-  API --> NEWS & BRIEF & GRAPH & STORE
-  SCHED --> NEWS
-  NEWS -->|HTTP 采集| FEEDS
-  GRAPH --> RETR
-  RETR -->|有界检索| SEARCH
-  BRIEF & GRAPH -->|模型请求| LLM
-  NEWS & BRIEF & GRAPH & RETR --> STORE
-  STORE --> DB
-  classDef app fill:#eef2f7,stroke:#8393a8,color:#17263c
-  classDef ai fill:#f1edf8,stroke:#9584b0,color:#2b2440
-  classDef data fill:#edf5f1,stroke:#7d9f92,color:#163b30
-  class UI,API,SCHED,NEWS,BRIEF,GRAPH,RETR app
-  class LLM,FEEDS,SEARCH ai
-  class STORE,DB data
-```
+![AIPulse 系统架构](docs/assets/system-architecture.png)
 
-箭头表示调用方向。Research Retriever 读取本地新闻并按开关访问固定公开 API；MySQL 保存新闻、摘要缓存、日报、研究任务、证据及节点日志。[详细模块边界与历史设计](docs/06-ARCHITECTURE.md)
+图为展示概览。实际调用中，Deep Research 通过 Research Retriever 读取已保存新闻并按开关访问固定公开 API，不触发新闻采集；APScheduler 仅触发 News Pipeline。MySQL 保存新闻、摘要缓存、日报、研究任务、证据及节点日志。[详细模块边界与 Mermaid](docs/06-ARCHITECTURE.md)
 
 ## LangGraph Research Workflow
 
-```mermaid
-flowchart TD
-  PLAN["研究规划"] --> SEARCH["多源检索"]
-  SEARCH --> EVIDENCE["证据评估与缺口识别"]
-  EVIDENCE --> ROUTE{"有缺口、未用查询<br/>且轮次允许？"}
-  ROUTE -->|选择补充查询| SEARCH
-  ROUTE -->|已覆盖或无法继续| REPORT["证据约束的报告生成"]
-  REPORT --> VERIFY["结构化输出与引用校验"]
-  VERIFY --> SAVE["结果持久化"]
-  SAVE --> STATUS["实际终态<br/>completed / partial / failed"]
-```
+![LangGraph Research Workflow](docs/assets/research-workflow.png)
 
 最多 **2 次模型调用、3 轮检索、18 条证据**。规划 / 报告输出上限为 **1000 / 6144 Token**，输入另计；外层执行器设置 **360 秒截止**，超时不会强行生成报告。证据不足可以得到 partial，格式或执行错误可以得到 failed，不以“跑完流程”冒充成功。[真实节点、路由与失败边界](docs/13-DEEP-RESEARCH.md)
 
